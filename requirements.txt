@@ -1,11 +1,5 @@
-streamlit
 pandas
-numpy
-plotly
-matplotlib
+scikit-learn
 openpyxl
-geopandas
-pyogrio
-shapely
-pyproj
-Unidecode
+wandb
+flask
