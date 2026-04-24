@@ -1,12 +1,26 @@
+import os
+from dotenv import load_dotenv
+import wandb
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import pickle
-import os
-import wandb
 
-# Configuración para que no pida llaves en Docker
-os.environ["WANDB_MODE"] = "offline"
-wandb.init(project="proyecto-ventas-final", name="entrenamiento-v1")
+# 1. CARGA SEGURA DE CREDENCIALES
+load_dotenv()
+api_key = os.getenv("WANDB_API_KEY")
+
+if api_key:
+    os.environ["WANDB_API_KEY"] = api_key
+    wandb.init(
+        project="proyecto-ventas-final", 
+        entity="diegomarceloa-yachay",
+        name="entrenamiento-final-seguro"
+    )
+else:
+    # Si no hay llave, corre en modo offline para no detener el proceso
+    print("⚠️ No se encontró API KEY, iniciando en modo offline")
+    os.environ["WANDB_MODE"] = "offline"
+    wandb.init(project="proyecto-ventas-final")
 
 # 1. Cargar datos
 if not os.path.exists('datos_ventas.csv'):
@@ -43,13 +57,20 @@ else:
         with open('modelo_ventas.pkl', 'wb') as f:
             pickle.dump(modelo, f)
 
-        # Registro en W&B
+        # Registro en W&B (Ahora se subirá a la nube)
         wandb.log({
             "total_meses_entrenados": len(y_list), 
             "ultimo_valor_real": y_list[-1],
             "maxima_venta_historica": max(y_list)
         })
+        
+        # Guardamos el modelo también en W&B como "Artifact" (Opcional pero muy profesional)
+        artifact = wandb.Artifact('modelo_ventas', type='model')
+        artifact.add_file('modelo_ventas.pkl')
+        wandb.log_artifact(artifact)
+
         print(f"¡ÉXITO! Modelo entrenado con {len(y_list)} meses.")
+        print("Puedes ver los resultados en: https://wandb.ai/diegomarceloa-yachay/proyecto-ventas-final")
     else:
         print("ERROR: No se encontraron datos válidos.")
     

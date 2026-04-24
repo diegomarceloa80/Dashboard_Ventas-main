@@ -1,18 +1,20 @@
+# Usamos una imagen de Python ligera
 FROM python:3.9-slim
+
+# Establecemos la carpeta de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiamos la lista de requerimientos
+# Copiamos el archivo de requerimientos primero para aprovechar el caché de Docker
 COPY requirements.txt .
 
-# Instalamos todo lo de la lista
+# Instalamos las librerías necesarias
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiamos el resto de los archivos
+# COPIAMOS TODO EL CONTENIDO (Esto incluye app.py y el modelo_ventas.pkl)
 COPY . .
 
-# Ejecutamos el entrenamiento (generará el modelo y conectará con W&B)
-RUN python train.py
-
-# Encendemos la web
+# Exponemos el puerto donde corre la app
 EXPOSE 5000
+
+# Comando para arrancar la aplicación
 CMD ["python", "app.py"]

@@ -1,0 +1,24 @@
+2026-04-23 21:10:16,013 INFO    MainThread:23276 [wandb_setup.py:_flush():81] Current SDK version is 0.26.0
+2026-04-23 21:10:16,013 INFO    MainThread:23276 [wandb_setup.py:_flush():81] Configure stats pid to 23276
+2026-04-23 21:10:16,013 INFO    MainThread:23276 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-04-23 21:10:16,013 INFO    MainThread:23276 [wandb_init.py:setup_run_log_directory():721] Logging user logs to C:\Produccion\Dashboard_Ventas-main\wandb\run-20260423_211016-nolvsp1c\logs\debug.log
+2026-04-23 21:10:16,014 INFO    MainThread:23276 [wandb_init.py:setup_run_log_directory():722] Logging internal logs to C:\Produccion\Dashboard_Ventas-main\wandb\run-20260423_211016-nolvsp1c\logs\debug-internal.log
+2026-04-23 21:10:16,014 INFO    MainThread:23276 [wandb_init.py:init():848] calling init triggers
+2026-04-23 21:10:16,014 INFO    MainThread:23276 [wandb_init.py:init():853] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2026-04-23 21:10:16,014 INFO    MainThread:23276 [wandb_init.py:init():896] starting backend
+2026-04-23 21:10:18,796 INFO    MainThread:23276 [wandb_init.py:init():911] sending inform_init request
+2026-04-23 21:10:18,903 INFO    MainThread:23276 [wandb_init.py:init():919] backend started and connected
+2026-04-23 21:10:18,951 INFO    MainThread:23276 [wandb_init.py:init():989] updated telemetry
+2026-04-23 21:10:19,185 INFO    MainThread:23276 [wandb_init.py:init():1013] communicating run to backend with 90.0 second timeout
+2026-04-23 21:10:20,522 INFO    MainThread:23276 [wandb_init.py:init():1058] starting run threads in backend
+2026-04-23 21:10:20,671 INFO    MainThread:23276 [wandb_run.py:_console_start():2542] atexit reg
+2026-04-23 21:10:20,671 INFO    MainThread:23276 [wandb_run.py:_redirect():2391] redirect: wrap_raw
+2026-04-23 21:10:20,672 INFO    MainThread:23276 [wandb_run.py:_redirect():2460] Wrapping output streams.
+2026-04-23 21:10:20,672 INFO    MainThread:23276 [wandb_run.py:_redirect():2483] Redirects installed.
+2026-04-23 21:10:20,679 INFO    MainThread:23276 [wandb_init.py:init():1098] run started, returning control to user process
+2026-04-23 21:10:28,427 INFO    MainThread:23276 [wandb_run.py:_finish():2309] finishing run diegomarceloa-yachay/proyecto-ventas-final/nolvsp1c
+2026-04-23 21:10:28,428 INFO    MainThread:23276 [wandb_run.py:_atexit_cleanup():2508] got exitcode: 0
+2026-04-23 21:10:28,429 INFO    MainThread:23276 [wandb_run.py:_restore():2490] restore
+2026-04-23 21:10:28,429 INFO    MainThread:23276 [wandb_run.py:_restore():2496] restore done
+2026-04-23 21:10:29,944 INFO    MainThread:23276 [wandb_run.py:_footer_sync_info():3886] logging synced files

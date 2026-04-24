@@ -3,3 +3,10 @@ scikit-learn
 openpyxl
 wandb
 flask
+kafka-python
+prometheus-client
+flask
+numpy
+prometheus-flask-exporter
+pickle-mixin
+joblib

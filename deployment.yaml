@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-ventas-deployment
+  labels:
+    app: ventas
+spec:
+  replicas: 3 # ¡Aquí está el truco! Tendrás 3 copias de tu web corriendo al mismo tiempo
+  selector:
+    matchLabels:
+      app: ventas
+  template:
+    metadata:
+      labels:
+        app: ventas
+    spec:
+      containers:
+      - name: app-ventas
+        image: app-ventas:latest # La imagen que construiste con Docker
+        ports:
+        - containerPort: 5000
+        imagePullPolicy: Never # Para que use la imagen local que ya tienes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-ventas-service
+spec:
+  selector:
+    app: ventas
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer # Crea un punto de entrada único para las 3 réplicas
