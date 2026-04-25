@@ -1,77 +1,63 @@
 import os
-from dotenv import load_dotenv
-import wandb
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+import numpy as np
 import pickle
+import wandb
+from dotenv import load_dotenv
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 
-# 1. CARGA SEGURA DE CREDENCIALES
 load_dotenv()
-api_key = os.getenv("WANDB_API_KEY")
+wandb.init(project="proyecto-ventas-final", name="entrenamiento-por-seccion")
 
-if api_key:
-    os.environ["WANDB_API_KEY"] = api_key
-    wandb.init(
-        project="proyecto-ventas-final", 
-        entity="diegomarceloa-yachay",
-        name="entrenamiento-final-seguro"
-    )
-else:
-    # Si no hay llave, corre en modo offline para no detener el proceso
-    print("⚠️ No se encontró API KEY, iniciando en modo offline")
-    os.environ["WANDB_MODE"] = "offline"
-    wandb.init(project="proyecto-ventas-final")
+# 1. Cargar y Limpiar Datos
+df = pd.read_csv('datos_ventas.csv', encoding='latin1', sep=';', engine='python')
+columnas_ventas = [c for c in df.columns if '/' in str(c)]
 
-# 1. Cargar datos
-if not os.path.exists('datos_ventas.csv'):
-    print("ERROR: Archivo datos_ventas.csv no encontrado")
-    wandb.finish()
-else:
-    df = pd.read_csv('datos_ventas.csv', encoding='latin1', sep=None, engine='python', on_bad_lines='skip')
+X_list = []
+y_list = []
 
-    # 2. Identificar columnas de meses (buscamos las que tienen '/')
-    columnas_ventas = [c for c in df.columns if '/' in str(c)]
+# 2. Ingeniería de Características por Sección
+le = LabelEncoder()
+df['SECCION_ID'] = le.fit_transform(df['SECCIÓN'].astype(str))
+
+for col in columnas_ventas:
+    mes, anio = map(int, col.split('/'))
+    # Limpiar valores monetarios
+    serie_limpia = df[col].astype(str).str.replace('.', '').str.replace(',', '.').str.replace('$', '').str.strip()
+    valores = pd.to_numeric(serie_limpia, errors='coerce').fillna(0)
     
-    X_list = []
-    y_list = []
+    # Agrupar por sección para ese mes específico
+    ventas_por_seccion = df.assign(venta=valores).groupby('SECCION_ID')['venta'].sum()
     
-    # 3. Limpieza y preparación de listas
-    for i, col in enumerate(columnas_ventas):
-        # Limpiamos la columna: quitamos comas, símbolos de dólar y espacios
-        serie_limpia = df[col].astype(str).str.replace(',', '').str.replace('$', '').str.strip()
-        
-        # Convertimos a número (lo que no sea número será 0)
-        valores_numericos = pd.to_numeric(serie_limpia, errors='coerce').fillna(0)
-        total_mes = valores_numericos.sum()
-        
-        if total_mes > 0:
-            X_list.append([i + 1]) 
-            y_list.append(total_mes)
+    for sec_id, total in ventas_por_seccion.items():
+        if total > 0:
+            X_list.append([sec_id, mes, anio])
+            y_list.append(total)
 
-    # 4. Entrenamiento y Registro
-    if len(y_list) > 0:
-        modelo = RandomForestRegressor(n_estimators=100, random_state=42)
-        modelo.fit(X_list, y_list)
+X = np.array(X_list)
+y = np.array(y_list).reshape(-1, 1)
 
-        # Guardamos el archivo .pkl
-        with open('modelo_ventas.pkl', 'wb') as f:
-            pickle.dump(modelo, f)
+# 3. Escalamiento y Modelo
+scaler_x = StandardScaler()
+scaler_y = StandardScaler()
+X_scaled = scaler_x.fit_transform(X)
+y_scaled = scaler_y.fit_transform(y)
 
-        # Registro en W&B (Ahora se subirá a la nube)
-        wandb.log({
-            "total_meses_entrenados": len(y_list), 
-            "ultimo_valor_real": y_list[-1],
-            "maxima_venta_historica": max(y_list)
-        })
-        
-        # Guardamos el modelo también en W&B como "Artifact" (Opcional pero muy profesional)
-        artifact = wandb.Artifact('modelo_ventas', type='model')
-        artifact.add_file('modelo_ventas.pkl')
-        wandb.log_artifact(artifact)
+modelo = RandomForestRegressor(n_estimators=300, max_depth=15, random_state=42)
+modelo.fit(X_scaled, y_scaled.ravel())
 
-        print(f"¡ÉXITO! Modelo entrenado con {len(y_list)} meses.")
-        print("Puedes ver los resultados en: https://wandb.ai/diegomarceloa-yachay/proyecto-ventas-final")
-    else:
-        print("ERROR: No se encontraron datos válidos.")
-    
-    wandb.finish()
+# 4. Guardar Paquete Completo
+paquete = {
+    'model': modelo,
+    'scaler_x': scaler_x,
+    'scaler_y': scaler_y,
+    'label_encoder': le,
+    'secciones': list(le.classes_)
+}
+
+with open('modelo_ventas.pkl', 'wb') as f:
+    pickle.dump(paquete, f)
+
+wandb.log({"total_registros": len(y_list), "num_secciones": len(le.classes_)})
+wandb.finish()

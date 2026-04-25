@@ -1,0 +1,28 @@
+{
+  "os":  "Windows-11-10.0.26200-SP0",
+  "python":  "CPython 3.13.7",
+  "startedAt":  "2026-04-25T03:46:06.111753Z",
+  "program":  "C:\\Produccion\\Dashboard_Ventas-main\\train.py",
+  "codePath":  "train.py",
+  "codePathLocal":  "train.py",
+  "git":  {
+    "remote":  "https://github.com/diegomarceloa80/Dashboard_Ventas-main.git",
+    "commit":  "0e64c379f3e12da9caf12646a9ef0e66106a614a"
+  },
+  "email":  "diegomarceloa@gmail.com",
+  "root":  "C:\\Produccion\\Dashboard_Ventas-main",
+  "host":  "Diego-IT",
+  "executable":  "C:\\Produccion\\.venv\\Scripts\\python.exe",
+  "cpu_count":  4,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "997182140416",
+      "used":  "939160875008"
+    }
+  },
+  "memory":  {
+    "total":  "16543780864"
+  },
+  "writerId":  "6zmgqu0vwpw2guchj1i3y4n7le2kggwx"
+}
